@@ -1,6 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
 const github = require('../helpers/github');
+const db = require('../database/index');
 
 let app = express();
 
@@ -12,7 +13,18 @@ app.use(bodyParser.urlencoded({extended: true}));
 
 app.post('/repos', function (req, res) {
   let username = req.body.user;
-  github.getReposByUsername(username);
+  return github.getReposByUsername(username)
+    .then((repos) => {
+      repos.forEach((repo) => {
+        db.save({
+          owner: repo.owner.login,
+          name: repo.name,
+          createdAt: repo.created_at,
+          starCount: repo.stargazers_count,
+          forksCount: repo.forks_count
+        });
+      });
+    });
 });
 
 app.get('/repos', function (req, res) {

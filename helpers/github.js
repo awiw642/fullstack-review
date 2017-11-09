@@ -1,5 +1,6 @@
 const request = require('request');
 const config = require('../config.js');
+const Promise = require('bluebird');
 
 let getReposByUsername = (username) => {
   let options = {
@@ -10,10 +11,18 @@ let getReposByUsername = (username) => {
     }
   };
 
-  request(options, function (error, response, body) {
-    console.log(typeof response);
+  return new Promise((resolve, reject) => {
+    request.get(options, (error, response, body) => {
+      if (error) {
+        reject(error);
+      } else if (body.message) {
+        console.log(body.message);
+        reject(new Error('Failed to get GitHub profile: ' + body.message));
+      } else {
+        resolve(JSON.parse(body));
+      }
+    });
   });
-
 }
 
 module.exports.getReposByUsername = getReposByUsername;

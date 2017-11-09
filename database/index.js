@@ -11,15 +11,16 @@ let repoSchema = new mongoose.Schema({
 
 let Repo = mongoose.model('Repo', repoSchema);
 
-let save = (/* TODO */) => {
-  // TODO: Your code here
-  // This function should save a repo or repos to
-  // the MongoDB
+let save = (repo) => {
+  let repository = new Repo(repo);
+  repository.save((error, repo) => {
+    console.log(repo);
+    if (error) {
+      console.log(error);
+    }
+  })
 }
 
-db.on('error', console.error.bind(console, 'connection error:'));
-db.once('open', function() {
-  console.log('Connected');
-});
+
 
 module.exports.save = save;
