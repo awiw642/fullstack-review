@@ -2,6 +2,7 @@ const mongoose = require('mongoose');
 mongoose.connect('mongodb://localhost/fetcher');
 
 let repoSchema = new mongoose.Schema({
+  id: {type: Number, required: true, unique: true},
   owner: String,
   name: String,
   createdAt: Date,
@@ -11,7 +12,7 @@ let repoSchema = new mongoose.Schema({
 
 let Repo = mongoose.model('Repo', repoSchema);
 
-let save = (repo) => {
+exports.save = (repo) => {
   let repository = new Repo(repo);
   repository.save((error, repo) => {
     console.log(repo);
@@ -19,8 +20,13 @@ let save = (repo) => {
       console.log(error);
     }
   })
-}
+};
 
+exports.fetch = (next) => {
+  Repo.
+    find({}).
+    limit(25).
+    sort('-createdAt').
+    exec(next)
+};
 
-
-module.exports.save = save;
